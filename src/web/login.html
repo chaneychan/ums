@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>logined page</title>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script language="javascript">
+/*$("#file").change(function (event) {*/
+var filechange=function(event){
+    var files = event.target.files, file;
+    if (files && files.length > 0) {
+        // 获取目前上传的文件
+        file = files[0];// 文件大小校验的动作
+        if(file.size > 1024 * 1024 * 2) {
+            alert('图片大小不能超过 2MB!');
+            return false;
+        }
+        // 获取 window 的 URL 工具
+        var URL = window.URL || window.webkitURL;
+        // 通过 file 生成目标 url
+        var imgURL = URL.createObjectURL(file);
+        //用attr将img的src属性改成获得的url
+        $("#img-change").attr("src",imgURL);
+        // 使用下面这句可以在内存中释放对此 url 的伺服，跑了之后那个 URL 就无效了
+        // URL.revokeObjectURL(imgURL);
+    }
+};
+</script>
+
+</head>
+<body>
+	<form action="/updateUser.do" name="frm" method="post" enctype="multipart/form-data">
+		{{if .err_msg}} {{.err_msg}}
+		<h3>logined failed</h3>
+		{{end}} {{if .user}}
+		<h3>logined success</h3>
+		<input type="text" name="id" value="{{.user.Id}}" style="display:none;"/>
+		<p>name:{{.user.Name}}</p>
+		<input type="text" name="name" value="{{.user.Name}}" style="display:none;"/>
+		<p>
+			profile: <img src="{{.user.Profile}}" width="200px" height="200px" id="img-change"/>
+			<input type="file" name="profile" accept="image/gif,image/jpeg,image/jpg,image/png" onchange="filechange(event)"/>
+		</p>
+		<p>
+			nickname: <input type="text" name="nickname" value="{{.user.Nickname}}"/>
+		</p>
+		<p>createtime:{{.user.CreateTime}}</p>
+	
+		{{end}}
+		<input type="submit" value="update" />
+		<a href="/">返回</a>
+	</form>
+</body>
+</html>
